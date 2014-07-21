@@ -5,10 +5,10 @@ var qindex = -1;
 
 $("#nextButton").click(function () {
     var quotes = [
-        "Buy a homeless person food. And give it with a smile.",
+        "Smile at strangers. Any person at the cash register, person behind a customer service desk, cleaners/helpers at the mall, on road, etc. Make their day!",
         "Visit someone who is lonely.",
         "Buy water for Labourers working in the Scorching heat.",
-        "Smile at strangers. Any person at the cash register, person behind a customer service desk, cleaners/helpers at the mall, on road, etc. Make their day!",
+        "Buy a homeless person food. And give it with a smile.",
         "Encourage someone.",
         "Introduce Yourself to a new Classmate.",
         "Give directions(with patience) to someone who is lost.",
