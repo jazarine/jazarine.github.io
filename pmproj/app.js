@@ -1,6 +1,7 @@
 var PMGame = (function () {
     function PMGame() {
         this.bgData = "data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAABHNCSVQICAgIfAhkiAAAAFFJREFUWIXtzjERACAQBDFgMPOKzr8ScADFFlBsFKRX1WqfStLG68SNQcogZZAySBmkDFIGKYOUQcogZZAySBmkDFIGKYOUQcog9X1wJnl9ONrTcwPWLGFOywAAAABJRU5ErkJggg==";
+        this.starfield = null;
         this.me = null;
         this.tileGroup = null;
         this.correctedTileCount = 0;
@@ -9,7 +10,7 @@ var PMGame = (function () {
         this.boardWidth = 0;
         this.leftBuffer = 0;
         this.topBuffer = 0;
-        this.matrixTileWidth = 100;
+        this.matrixTileWidth = 130;
         this.matrixTileHeight = 50;
         this.draggedItemInitX = 0;
         this.draggedItemInitY = 0;
@@ -59,10 +60,10 @@ var PMGame = (function () {
         //    'w', 'x', 'y', 'z'
         //];
         this.tileColors = [
-            '#ffffff'
+            '#000000'
         ];
         this.tileHeaderColors = [
-            '#000000'
+            '#ffffff'
         ];
         this.tiles = null;
         this.random = null;
@@ -76,8 +77,12 @@ var PMGame = (function () {
 var pmGame = new PMGame();
 var SimpleGame = (function () {
     function SimpleGame() {
-        this.game = new Phaser.Game(800, 600, Phaser.AUTO, 'content', { preload: this.preload, create: this.create, update: this.update, render: this.render });
+        var _this = this;
+        setTimeout(function () {
+            _this.game = new Phaser.Game(800, 600, Phaser.AUTO, 'content', { preload: _this.preload, create: _this.create, update: _this.update, render: _this.render });
+        }, 1000);
         //debugger;
+        //var WebFontConfig = pmGame.WebFontConfig;
     }
     SimpleGame.prototype.preload = function () {
         //this.game.load.image('logo', 'phaser-Logo-Small.png');
@@ -89,7 +94,10 @@ var SimpleGame = (function () {
         //this.game.load.image('firstaid', 'assets/sprites/firstaid.png');
         //this.game.load.image('diamond', 'assets/sprites/diamond.png');
         //this.game.load.image('mushroom', 'assets/sprites/mushroom2.png');
-        this.game.load.bitmapFont('gem', 'assets/fonts/bitmapFonts/gem.png', 'assets/fonts/bitmapFonts/gem.xml');
+        this.game.load.bitmapFont('gem', 'assets/fonts/bitmapFonts/desyrel.png', 'assets/fonts/bitmapFonts/desyrel.xml');
+        //this.game.load.image('starfield', 'assets/games/invaders/starfield.png');
+        this.game.load.image('starfield', 'assets/pmproj/clouds.png');
+        //this.game.load.script('webfont', '//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js');
         //var iBg = new Image();
         //iBg.src = pmGame.bgData;
         //this.game.cache.addImage('bg', pmGame.bgData, iBg);
@@ -143,6 +151,8 @@ var SimpleGame = (function () {
         //Set the width and height for the tiles
         //this.game.add.tileSprite(0, 0, this.game.width, this.game.height, 'bg');
         pmGame.me = this;
+        //  The scrolling starfield background
+        pmGame.starfield = this.game.add.tileSprite(0, 0, 800, 600, 'starfield');
         this.game.stage.backgroundColor = "34495f";
         pmGame.tiles = this.game.add.group();
         //Keep a reference to the total grid width and height
@@ -151,7 +161,7 @@ var SimpleGame = (function () {
         //We want to keep a buffer on the left and top so that the grid
         //can be centered
         //pmGame.leftBuffer = (this.game.width - pmGame.boardWidth) / 2;
-        pmGame.topBuffer = (this.game.height - pmGame.boardHeight) / 2;
+        //pmGame.topBuffer = (this.game.height - pmGame.boardHeight) / 2;
         //Create a random data generator to use later
         var seed = Date.now();
         pmGame.random = new Phaser.RandomDataGenerator([seed]);
@@ -166,16 +176,18 @@ var SimpleGame = (function () {
         //        bmpText.input.enableDrag(false, true);
         //        bmpText.events.onDragStart.add(onDragStart, this);
         //        bmpText.events.onDragStop.add(onDragStop, this);
-        var tile = this.game.add.bitmapData(pmGame.matrixTileWidth, pmGame.matrixTileHeight);
-        tile.ctx.rect(5, 5, pmGame.matrixTileWidth - 5, pmGame.matrixTileHeight - 5);
-        tile.ctx.fill();
-        //tile.ctx.miterLimit = "5"
-        tile.ctx.font = '15px Arial';
-        tile.ctx.textAlign = 'center';
-        tile.ctx.textBaseline = 'middle';
-        tile.ctx.fillStyle = '#fff';
-        tile.ctx.lineWidth = 20;
-        tile.ctx.fillText('a', pmGame.matrixTileWidth / 2, pmGame.matrixTileHeight / 2);
+        //var tile = this.game.add.bitmapData(pmGame.matrixTileWidth, pmGame.matrixTileHeight);
+        //tile.ctx.rect(5, 5, pmGame.matrixTileWidth - 5, pmGame.matrixTileHeight - 5);
+        //tile.ctx.fill();
+        ////tile.ctx.miterLimit = "5"
+        //tile.ctx.font = '15px Arial';
+        //tile.ctx.textAlign = 'center';
+        //tile.ctx.textBaseline = 'middle';
+        //tile.ctx.fillStyle = '#fff';
+        //tile.ctx.lineWidth = 20;
+        //tile.ctx.fillText('a', pmGame.matrixTileWidth / 2, pmGame.matrixTileHeight / 2);
+        //var grd = tile.context.createLinearGradient(0, 0, 0, 32);
+        //grd.addColorStop(0, '#e6f0a3');
         //    }
         //}
     };
@@ -185,6 +197,9 @@ var SimpleGame = (function () {
     };
     SimpleGame.prototype.update = function () {
         //alert('aha!');
+        //  Scroll the background
+        pmGame.starfield.tilePosition.y += 1;
+        pmGame.starfield.tilePosition.x += 1;
     };
     SimpleGame.prototype.onDragStop = function (sprite, pointer) {
         pmGame.result = sprite.key + " dropped at x:" + pointer.x + " y: " + pointer.y;
@@ -204,6 +219,7 @@ function dragStart(draggedItem, pointer) {
     //copySprite.alpha = 1;
     //debugger;
     //alert("ahaDragStart!");
+    draggedItem.tint = 0xff00ff;
 }
 function dragUpdate(sprite, pointer, dragX, dragY, snapPoint) {
     //  As we drag the ship around inc the angle
@@ -216,6 +232,7 @@ function dragUpdate(sprite, pointer, dragX, dragY, snapPoint) {
 }
 function dragStop(draggedItem, pointer) {
     //copySprite.alpha = 0.5;
+    draggedItem.tint = 16777215;
     var isOverlapped = null;
     var overlappedSprite = null;
     for (var i = 0; i < pmGame.tileGroup.children.length; i++) {
@@ -296,7 +313,7 @@ function initHeaderTiles(me) {
         //var me = this;
         var tileLetter = pmGame.rowHeadings[i - 1];
         var tileColor = pmGame.tileHeaderColors[pmGame.tileHeaderColors.length - 1];
-        var tileToAdd = createTile(pmGame.me, tileLetter, tileColor);
+        var tileToAdd = createTile(pmGame.me, tileLetter, tileColor, 1);
         //Add the tile at the correct x position, but add it to the top of the game (so we can slide it in)
         var tile = pmGame.tiles.create(pmGame.leftBuffer + (i * pmGame.matrixTileWidth) + pmGame.matrixTileWidth / 2, 0, tileToAdd);
         //tile.inputEnabled = true;
@@ -321,7 +338,7 @@ function initHeaderTiles(me) {
         //if (j == 0) continue;
         var tileLetter = pmGame.colHeadings[j - 1];
         var tileColor = pmGame.tileHeaderColors[pmGame.tileHeaderColors.length - 1];
-        var tileToAdd = createTile(pmGame.me, tileLetter, tileColor);
+        var tileToAdd = createTile(pmGame.me, tileLetter, tileColor, 2);
         //Add the tile at the correct x position, but add it to the top of the game (so we can slide it in)
         var tile = pmGame.tiles.create(pmGame.leftBuffer + (0 * pmGame.matrixTileWidth) + pmGame.matrixTileWidth / 2, 0, tileToAdd);
         //tile.inputEnabled = true;
@@ -352,7 +369,7 @@ function addTile(me, x, y, shuffledTileTexts, shuffledTileIndex) {
     var tileLetter = shuffledTileTexts[shuffledTileIndex];
     //- Jaz
     var tileColor = pmGame.tileColors[0];
-    var tileToAdd = createTile(pmGame.me, tileLetter, tileColor);
+    var tileToAdd = createTile(pmGame.me, tileLetter, tileColor, 0);
     //Add the tile at the correct x position, but add it to the top of the game (so we can slide it in)
     var tile = pmGame.tiles.create(pmGame.leftBuffer + (x * pmGame.matrixTileWidth) + pmGame.matrixTileWidth / 2, 0, tileToAdd);
     //+ Commented out Jaz
@@ -378,23 +395,54 @@ function addTile(me, x, y, shuffledTileTexts, shuffledTileIndex) {
     tile.tileLetter = tileLetter;
     return tile;
 }
-function createTile(me, letter, color) {
+//
+//tileType: 0=gameTiles(draggable), 1=rowHeader, 2=colHeader
+//
+function createTile(me, letter, color, tileType) {
     //var me = this;
     //debugger;
     var tile = pmGame.me.game.add.bitmapData(pmGame.matrixTileWidth, pmGame.matrixTileHeight);
-    tile.ctx.rect(0, 0, pmGame.matrixTileWidth - 5, pmGame.matrixTileHeight - 5);
-    tile.ctx.fillStyle = color;
-    tile.ctx.fill();
-    tile.ctx.font = '10px Arial';
-    tile.ctx.textAlign = 'left';
-    //tile.ctx.lineWidth = 20;
-    tile.ctx.textBaseline = 'top';
-    tile.ctx.fillStyle = '#fff';
-    if (color == '#ffffff') {
-        tile.ctx.fillStyle = '#000000';
+    var grd = tile.context.createLinearGradient(0, 0, 0, 32);
+    //debugger;
+    if (tileType == 0) {
+        grd.addColorStop(0, '#a90329');
+        grd.addColorStop(1, '#6d0019');
+        tile.ctx.rect(5, 5, pmGame.matrixTileWidth - 5, pmGame.matrixTileHeight - 5);
+        tile.ctx.fillStyle = grd;
+        tile.ctx.fill();
+        tile.ctx.font = '10px Paprika';
+        tile.ctx.fillStyle = '#fff';
     }
-    //tile.ctx.fillText(letter, 0, pmGame.matrixTileHeight / 2, pmGame.matrixTileWidth-3);
-    wrapText(tile.ctx, letter, 0, 0, pmGame.matrixTileWidth, 15);
+    else if (tileType == 1) {
+        grd.addColorStop(0, '#f9c667');
+        grd.addColorStop(1, '#f79621');
+        tile.ctx.rect(5, 5, pmGame.matrixTileWidth - 5, pmGame.matrixTileHeight - 5);
+        tile.ctx.fillStyle = grd;
+        tile.ctx.fill();
+        tile.ctx.font = '10px Paprika';
+        tile.ctx.fillStyle = '#fff';
+    }
+    else {
+        grd.addColorStop(0, '#627d4d');
+        grd.addColorStop(1, '#1f3b08');
+        tile.ctx.rect(5, 5, pmGame.matrixTileWidth - 5, pmGame.matrixTileHeight - 5);
+        tile.ctx.fillStyle = grd;
+        tile.ctx.fill();
+        tile.ctx.font = '10px Paprika';
+        tile.ctx.fillStyle = '#fff';
+    }
+    //grd.addColorStop(2, '#c3d825');
+    //grd.addColorStop(3, '#dbf043');
+    tile.ctx.textAlign = 'center';
+    //tile.ctx.lineWidth = 20;
+    //tile.ctx.textBaseline = 'middle';
+    //tile.ctx.fillStyle = '#fff';
+    //if (color == '#ffffff') {
+    //    tile.ctx.fillStyle = '#000000';
+    //}
+    //tile.ctx.fillText(letter, 0, pmGame.matrixTileHeight / 2, pmGame.matrixTileWidth - 3);
+    //tile.ctx.strokeText("Hello World", 0, pmGame.matrixTileHeight / 2);
+    wrapText(tile.ctx, letter, pmGame.matrixTileWidth / 2, pmGame.matrixTileHeight / 2, pmGame.matrixTileWidth, 18);
     return tile;
 }
 // http: //www.html5canvastutorials.com/tutorials/html5-canvas-wrap-text-tutorial/
