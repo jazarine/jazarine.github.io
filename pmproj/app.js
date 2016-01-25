@@ -4,8 +4,9 @@ var PMGame = (function () {
         this.starfield = null;
         this.me = null;
         this.tileGroup = null;
-        this.correctedTileCount = 0;
-        this.result = 'Drag a sprite';
+        this.score = 0;
+        this.scoreBuffer = 0;
+        this.result = null;
         this.boardHeight = 0;
         this.boardWidth = 0;
         this.leftBuffer = 0;
@@ -165,6 +166,10 @@ var SimpleGame = (function () {
         //Create a random data generator to use later
         var seed = Date.now();
         pmGame.random = new Phaser.RandomDataGenerator([seed]);
+        //  Text
+        pmGame.result = this.game.add.text(this.game.world.centerX, this.game.world.centerY, ' ', { font: '84px Arial', fill: '#fff' });
+        pmGame.result.anchor.setTo(0.5, 0.5);
+        pmGame.result.visible = false;
         //Set up some initial tiles and the score label
         initTiles(this);
         //var test = this.game.add.group();
@@ -200,9 +205,6 @@ var SimpleGame = (function () {
         //  Scroll the background
         pmGame.starfield.tilePosition.y += 1;
         pmGame.starfield.tilePosition.x += 1;
-    };
-    SimpleGame.prototype.onDragStop = function (sprite, pointer) {
-        pmGame.result = sprite.key + " dropped at x:" + pointer.x + " y: " + pointer.y;
     };
     return SimpleGame;
 })();
@@ -257,8 +259,13 @@ function dragStop(draggedItem, pointer) {
         if ((overlappedSpritePreviousX == draggedItem.correctX) && (overlappedSpritePreviousY == draggedItem.correctY)) {
             draggedItem.inputEnabled = false;
             draggedItem.isInCorrectPosition = true;
-            pmGame.correctedTileCount++;
+            pmGame.score++;
             draggedItem.tint = 0xff00ff;
+        }
+        if (pmGame.score == 27) {
+            pmGame.result.text = " You Won!";
+            pmGame.result.visible = true;
+            pmGame.result.bringToTop();
         }
     }
     else if (overlappedSprite.isInCorrectPosition) {
