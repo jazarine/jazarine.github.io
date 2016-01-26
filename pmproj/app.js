@@ -178,7 +178,7 @@ var SimpleGame = (function () {
         var seed = Date.now();
         pmGame.random = new Phaser.RandomDataGenerator([seed]);
         //  Text
-        pmGame.result = this.game.add.text(this.game.world.centerX, this.game.world.centerY, ' ', { font: '34px Paprika', fill: '#fff' });
+        pmGame.result = this.game.add.text(this.game.world.centerX, this.game.world.centerY, ' ', { font: '34px Paprika', fill: '#a90329' });
         pmGame.result.anchor.setTo(0.5, 0.5);
         pmGame.result.visible = false;
         //Set up some initial tiles and the score label
@@ -285,10 +285,10 @@ function dragStop(draggedItem, pointer) {
         if (pmGame.score == 27) {
             var winningTime = Math.round(pmGame.me.game.time.totalElapsedSeconds());
             if ((winningTime / 60) % 60 < 1) {
-                pmGame.result.text = "You Win!\nYour time: " + winningTime + " seconds";
+                pmGame.result.text = "You Win!\nYou took " + winningTime + " seconds to complete this game!";
             }
             else {
-                pmGame.result.text = "You Win!\nYour time: " + Math.round(winningTime / 60) + " minutes " + winningTime % 60 + " seconds";
+                pmGame.result.text = "You Win!\nYour took \n" + Math.round(winningTime / 60) + " minutes " + winningTime % 60 + " seconds\nto complete this game!";
             }
             pmGame.result.visible = true;
             for (var i = 0; i < pmGame.tiles.children.length; i++) {
