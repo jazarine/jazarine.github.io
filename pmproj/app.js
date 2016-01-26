@@ -2,6 +2,8 @@ var PMGame = (function () {
     function PMGame() {
         this.bgData = "data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAABHNCSVQICAgIfAhkiAAAAFFJREFUWIXtzjERACAQBDFgMPOKzr8ScADFFlBsFKRX1WqfStLG68SNQcogZZAySBmkDFIGKYOUQcogZZAySBmkDFIGKYOUQcog9X1wJnl9ONrTcwPWLGFOywAAAABJRU5ErkJggg==";
         this.starfield = null;
+        this.sky = null;
+        this.clouds = null;
         this.me = null;
         this.score = 0;
         this.scoreBuffer = 0;
@@ -10,8 +12,8 @@ var PMGame = (function () {
         this.boardWidth = 0;
         this.leftBuffer = 0;
         this.topBuffer = 0;
-        this.matrixTileWidth = 130;
-        this.matrixTileHeight = 50;
+        this.matrixTileWidth = 154;
+        this.matrixTileHeight = 70;
         this.draggedItemInitX = 0;
         this.draggedItemInitY = 0;
         //matrixDataGrid = [
@@ -80,7 +82,7 @@ var SimpleGame = (function () {
     function SimpleGame() {
         var _this = this;
         setTimeout(function () {
-            _this.game = new Phaser.Game(800, 600, Phaser.AUTO, 'content', { preload: _this.preload, create: _this.create, update: _this.update, render: _this.render });
+            _this.game = new Phaser.Game(950, 800, Phaser.AUTO, 'content', { preload: _this.preload, create: _this.create, update: _this.update, render: _this.render });
         }, 1000);
         //debugger;
         //var WebFontConfig = pmGame.WebFontConfig;
@@ -97,11 +99,11 @@ var SimpleGame = (function () {
         //this.game.load.image('mushroom', 'assets/sprites/mushroom2.png');
         this.game.load.bitmapFont('gem', 'assets/fonts/bitmapFonts/desyrel.png', 'assets/fonts/bitmapFonts/desyrel.xml');
         //this.game.load.image('starfield', 'assets/games/invaders/starfield.png');
-        this.game.load.image('starfield', 'assets/pmproj/sky.jpg');
+        //this.game.load.image('sky', 'assets/pmproj/sky.jpg');
         //this.game.load.image('starfield', 'assets/pmproj/wood.jpg');
         //this.game.load.image('starfield', 'assets/pmproj/wood_light.png');
         //this.game.load.image('starfield', 'assets/pmproj/grass.jpg');
-        //this.game.load.image('starfield', 'assets/pmproj/clouds.png');
+        this.game.load.image('clouds', 'assets/pmproj/clouds.png');
         //this.game.load.script('webfont', '//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js');
         //var iBg = new Image();
         //iBg.src = pmGame.bgData;
@@ -157,7 +159,9 @@ var SimpleGame = (function () {
         //this.game.add.tileSprite(0, 0, this.game.width, this.game.height, 'bg');
         pmGame.me = this;
         //  The scrolling starfield background
-        pmGame.starfield = this.game.add.tileSprite(0, 0, 800, 600, 'starfield');
+        //pmGame.starfield = this.game.add.tileSprite(0, 0, 950, 800, 'starfield');
+        //pmGame.sky = this.game.add.tileSprite(0, 0, 950, 800, 'sky');
+        pmGame.clouds = this.game.add.tileSprite(0, 0, 950, 800, 'clouds');
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
         this.game.stage.backgroundColor = "34495f";
         pmGame.headerTiles = this.game.add.group();
@@ -169,12 +173,12 @@ var SimpleGame = (function () {
         //We want to keep a buffer on the left and top so that the grid
         //can be centered
         //pmGame.leftBuffer = (this.game.width - pmGame.boardWidth) / 2;
-        pmGame.topBuffer = (this.game.height - pmGame.boardHeight) / 2;
+        //pmGame.topBuffer = (this.game.height - pmGame.boardHeight) / 2;
         //Create a random data generator to use later
         var seed = Date.now();
         pmGame.random = new Phaser.RandomDataGenerator([seed]);
         //  Text
-        pmGame.result = this.game.add.text(this.game.world.centerX, this.game.world.centerY, ' ', { font: '64px Paprika', fill: '#fff' });
+        pmGame.result = this.game.add.text(this.game.world.centerX, this.game.world.centerY, ' ', { font: '34px Paprika', fill: '#fff' });
         pmGame.result.anchor.setTo(0.5, 0.5);
         pmGame.result.visible = false;
         //Set up some initial tiles and the score label
@@ -210,7 +214,9 @@ var SimpleGame = (function () {
     SimpleGame.prototype.update = function () {
         //alert('aha!');
         //  Scroll the background
-        pmGame.starfield.tilePosition.y -= 1;
+        //pmGame.starfield.tilePosition.y -= 1;
+        //pmGame.sky.tilePosition.y -= 1;
+        pmGame.clouds.tilePosition.y = -1;
         //pmGame.starfield.tilePosition.x += 1;
         //debugger;
         //pmGame.me.physics.arcade.collide(pmGame.tileGroup.children[0], pmGame.tileGroup.children[1], collisionHandler, null, this);
@@ -253,7 +259,8 @@ function dragStop(draggedItem, pointer) {
     var overlappedSprite = null;
     for (var i = 0; i < pmGame.tiles.children.length; i++) {
         if (draggedItem != pmGame.tiles.children[i]) {
-            isOverlapped = pmGame.me.physics.arcade.overlap(draggedItem, pmGame.tiles.children[i]);
+            //isOverlapped = pmGame.me.physics.arcade.overlap(draggedItem, pmGame.tiles.children[i])
+            isOverlapped = checkOverlap(draggedItem, pmGame.tiles.children[i]);
             if (isOverlapped) {
                 overlappedSprite = pmGame.tiles.children[i];
                 break;
@@ -278,10 +285,10 @@ function dragStop(draggedItem, pointer) {
         if (pmGame.score == 27) {
             var winningTime = Math.round(pmGame.me.game.time.totalElapsedSeconds());
             if ((winningTime / 60) % 60 < 1) {
-                pmGame.result.text = " You Won!\nYour time: " + winningTime + " seconds";
+                pmGame.result.text = "You Win!\nYour time: " + winningTime + " seconds";
             }
             else {
-                pmGame.result.text = " You Won!\nYour time: " + Math.round(winningTime / 60) + " minutes " + winningTime % 60 + " seconds";
+                pmGame.result.text = "You Win!\nYour time: " + Math.round(winningTime / 60) + " minutes " + winningTime % 60 + " seconds";
             }
             pmGame.result.visible = true;
             for (var i = 0; i < pmGame.tiles.children.length; i++) {
@@ -305,6 +312,18 @@ function dragStop(draggedItem, pointer) {
     //    alert('Overlapping: false');
     //}
 }
+function checkOverlap(spriteA, spriteB) {
+    var boundsA = spriteA.getBounds();
+    var boundsB = spriteB.getBounds();
+    //debugger;
+    var initialOverlapCheckResult = Phaser.Rectangle.intersects(boundsA, boundsB);
+    if (initialOverlapCheckResult) {
+        return Phaser.Rectangle.intersectsRaw(spriteA, spriteB.left, spriteB.right, spriteB.top, spriteB.bottom, -15);
+    }
+    else {
+        return initialOverlapCheckResult;
+    }
+}
 function overlapHandler(bullet, veg) {
     //debugger;
     if (bullet != veg) {
@@ -321,8 +340,13 @@ function initTiles(me) {
     //    }
     //}
     //- Commented out Jaz
-    for (var y = 100; y <= 550; y = y + 50) {
-        for (var x = pmGame.matrixTileWidth * 1.5; x <= pmGame.matrixTileWidth * 1.5 * 5; x = x + pmGame.matrixTileWidth) {
+    //for (var y = 100; y <= 550; y = y + 50) {
+    //    for (var x = pmGame.matrixTileWidth * 1.5; x <= pmGame.matrixTileWidth * 1.5 + (4 * pmGame.matrixTileWidth); x = x + pmGame.matrixTileWidth) {
+    //        pmGame.correctCoords.push({ x: x, y: y });
+    //    }
+    //}
+    for (var y = pmGame.matrixTileHeight * 1.5; y <= pmGame.matrixTileHeight * 1.5 + (9 * pmGame.matrixTileWidth); y = y + pmGame.matrixTileHeight) {
+        for (var x = pmGame.matrixTileWidth * 1.5; x <= pmGame.matrixTileWidth * 1.5 + (4 * pmGame.matrixTileWidth); x = x + pmGame.matrixTileWidth) {
             pmGame.correctCoords.push({ x: x, y: y });
         }
     }
@@ -468,6 +492,9 @@ function createTile(me, letter, color, tileType) {
         tile.ctx.fill();
         tile.ctx.font = '10px Paprika';
         tile.ctx.fillStyle = '#fff';
+        tile.ctx.textAlign = 'center';
+        tile.ctx.textBaseline = 'middle';
+        wrapText(tile.ctx, letter, pmGame.matrixTileWidth / 2, 15, pmGame.matrixTileWidth - 5, 18);
     }
     else if (tileType == 1) {
         grd.addColorStop(0, '#f9c667');
@@ -477,6 +504,9 @@ function createTile(me, letter, color, tileType) {
         tile.ctx.fill();
         tile.ctx.font = '10px Paprika';
         tile.ctx.fillStyle = '#fff';
+        tile.ctx.textAlign = 'center';
+        tile.ctx.textBaseline = 'middle';
+        wrapText(tile.ctx, letter, pmGame.matrixTileWidth / 2, pmGame.matrixTileHeight / 2, pmGame.matrixTileWidth - 5, 18);
     }
     else {
         grd.addColorStop(0, '#627d4d');
@@ -486,19 +516,19 @@ function createTile(me, letter, color, tileType) {
         tile.ctx.fill();
         tile.ctx.font = '10px Paprika';
         tile.ctx.fillStyle = '#fff';
+        tile.ctx.textAlign = 'center';
+        tile.ctx.textBaseline = 'middle';
+        wrapText(tile.ctx, letter, pmGame.matrixTileWidth / 2, pmGame.matrixTileHeight / 2, pmGame.matrixTileWidth - 5, 18);
     }
     //grd.addColorStop(2, '#c3d825');
     //grd.addColorStop(3, '#dbf043');
-    tile.ctx.textAlign = 'center';
     //tile.ctx.lineWidth = 20;
-    //tile.ctx.textBaseline = 'middle';
     //tile.ctx.fillStyle = '#fff';
     //if (color == '#ffffff') {
     //    tile.ctx.fillStyle = '#000000';
     //}
-    //tile.ctx.fillText(letter, 0, pmGame.matrixTileHeight / 2, pmGame.matrixTileWidth - 3);
+    //tile.ctx.fillText(letter, 0, pmGame.matrixTileHeight / 2, pmGame.matrixTileWidth);
     //tile.ctx.strokeText("Hello World", 0, pmGame.matrixTileHeight / 2);
-    wrapText(tile.ctx, letter, pmGame.matrixTileWidth / 2, pmGame.matrixTileHeight / 2, pmGame.matrixTileWidth, 18);
     return tile;
 }
 // http: //www.html5canvastutorials.com/tutorials/html5-canvas-wrap-text-tutorial/
