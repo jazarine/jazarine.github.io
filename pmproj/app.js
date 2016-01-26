@@ -3,7 +3,6 @@ var PMGame = (function () {
         this.bgData = "data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAABHNCSVQICAgIfAhkiAAAAFFJREFUWIXtzjERACAQBDFgMPOKzr8ScADFFlBsFKRX1WqfStLG68SNQcogZZAySBmkDFIGKYOUQcogZZAySBmkDFIGKYOUQcog9X1wJnl9ONrTcwPWLGFOywAAAABJRU5ErkJggg==";
         this.starfield = null;
         this.me = null;
-        this.tileGroup = null;
         this.score = 0;
         this.scoreBuffer = 0;
         this.result = null;
@@ -66,6 +65,7 @@ var PMGame = (function () {
         this.tileHeaderColors = [
             '#ffffff'
         ];
+        this.headerTiles = null;
         this.tiles = null;
         this.random = null;
         this.rowHeadings = ['Initiation', 'Planning', 'Executing', 'Monitoring & Controlling', 'Closing'];
@@ -97,7 +97,11 @@ var SimpleGame = (function () {
         //this.game.load.image('mushroom', 'assets/sprites/mushroom2.png');
         this.game.load.bitmapFont('gem', 'assets/fonts/bitmapFonts/desyrel.png', 'assets/fonts/bitmapFonts/desyrel.xml');
         //this.game.load.image('starfield', 'assets/games/invaders/starfield.png');
-        this.game.load.image('starfield', 'assets/pmproj/clouds.png');
+        this.game.load.image('starfield', 'assets/pmproj/sky.jpg');
+        //this.game.load.image('starfield', 'assets/pmproj/wood.jpg');
+        //this.game.load.image('starfield', 'assets/pmproj/wood_light.png');
+        //this.game.load.image('starfield', 'assets/pmproj/grass.jpg');
+        //this.game.load.image('starfield', 'assets/pmproj/clouds.png');
         //this.game.load.script('webfont', '//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js');
         //var iBg = new Image();
         //iBg.src = pmGame.bgData;
@@ -154,20 +158,23 @@ var SimpleGame = (function () {
         pmGame.me = this;
         //  The scrolling starfield background
         pmGame.starfield = this.game.add.tileSprite(0, 0, 800, 600, 'starfield');
+        this.game.physics.startSystem(Phaser.Physics.ARCADE);
         this.game.stage.backgroundColor = "34495f";
-        pmGame.tiles = this.game.add.group();
+        pmGame.headerTiles = this.game.add.group();
+        pmGame.tiles = pmGame.me.add.group();
+        pmGame.tiles.enableBody = true;
         //Keep a reference to the total grid width and height
         pmGame.boardHeight = pmGame.matrixDataGrid.length * pmGame.matrixTileHeight;
         pmGame.boardWidth = pmGame.matrixDataGrid[0].length * pmGame.matrixTileWidth;
         //We want to keep a buffer on the left and top so that the grid
         //can be centered
         //pmGame.leftBuffer = (this.game.width - pmGame.boardWidth) / 2;
-        //pmGame.topBuffer = (this.game.height - pmGame.boardHeight) / 2;
+        pmGame.topBuffer = (this.game.height - pmGame.boardHeight) / 2;
         //Create a random data generator to use later
         var seed = Date.now();
         pmGame.random = new Phaser.RandomDataGenerator([seed]);
         //  Text
-        pmGame.result = this.game.add.text(this.game.world.centerX, this.game.world.centerY, ' ', { font: '84px Arial', fill: '#fff' });
+        pmGame.result = this.game.add.text(this.game.world.centerX, this.game.world.centerY, ' ', { font: '64px Paprika', fill: '#fff' });
         pmGame.result.anchor.setTo(0.5, 0.5);
         pmGame.result.visible = false;
         //Set up some initial tiles and the score label
@@ -203,8 +210,11 @@ var SimpleGame = (function () {
     SimpleGame.prototype.update = function () {
         //alert('aha!');
         //  Scroll the background
-        pmGame.starfield.tilePosition.y += 1;
-        pmGame.starfield.tilePosition.x += 1;
+        pmGame.starfield.tilePosition.y -= 1;
+        //pmGame.starfield.tilePosition.x += 1;
+        //debugger;
+        //pmGame.me.physics.arcade.collide(pmGame.tileGroup.children[0], pmGame.tileGroup.children[1], collisionHandler, null, this);
+        //pmGame.me.physics.arcade.overlap(pmGame.tileGroup.children[0], pmGame.tileGroup.children[1], overlapHandler,null,this)
     };
     return SimpleGame;
 })();
@@ -215,6 +225,9 @@ var SimpleGame = (function () {
 //function onDragStop(sprite, pointer) {
 //    pmGame.result = sprite.key + " dropped at x:" + pointer.x + " y: " + pointer.y;
 //}
+function collisionHandler(obj1, obj2) {
+    //debugger;
+}
 function dragStart(draggedItem, pointer) {
     pmGame.draggedItemInitX = draggedItem.position.x;
     pmGame.draggedItemInitY = draggedItem.position.y;
@@ -234,19 +247,19 @@ function dragUpdate(sprite, pointer, dragX, dragY, snapPoint) {
 }
 function dragStop(draggedItem, pointer) {
     //copySprite.alpha = 0.5;
+    debugger;
     draggedItem.tint = 16777215;
     var isOverlapped = null;
     var overlappedSprite = null;
-    for (var i = 0; i < pmGame.tileGroup.children.length; i++) {
-        if (draggedItem != pmGame.tileGroup.children[i]) {
-            isOverlapped = pmGame.me.physics.arcade.overlap(draggedItem, pmGame.tileGroup.children[i]);
+    for (var i = 0; i < pmGame.tiles.children.length; i++) {
+        if (draggedItem != pmGame.tiles.children[i]) {
+            isOverlapped = pmGame.me.physics.arcade.overlap(draggedItem, pmGame.tiles.children[i]);
             if (isOverlapped) {
-                overlappedSprite = pmGame.tileGroup.children[i];
+                overlappedSprite = pmGame.tiles.children[i];
                 break;
             }
         }
     }
-    //debugger;
     if (isOverlapped && overlappedSprite.isInCorrectPosition == false) {
         //Swap tiles - only if incorrect...
         var overlappedSpritePreviousX = Math.round(overlappedSprite.position.x);
@@ -263,8 +276,20 @@ function dragStop(draggedItem, pointer) {
             draggedItem.tint = 0xff00ff;
         }
         if (pmGame.score == 27) {
-            pmGame.result.text = " You Won!";
+            var winningTime = Math.round(pmGame.me.game.time.totalElapsedSeconds());
+            if ((winningTime / 60) % 60 < 1) {
+                pmGame.result.text = " You Won!\nYour time: " + winningTime + " seconds";
+            }
+            else {
+                pmGame.result.text = " You Won!\nYour time: " + Math.round(winningTime / 60) + " minutes " + winningTime % 60 + " seconds";
+            }
             pmGame.result.visible = true;
+            for (var i = 0; i < pmGame.tiles.children.length; i++) {
+                pmGame.tiles.children[i].kill();
+            }
+            for (var i = 0; i < pmGame.headerTiles.children.length; i++) {
+                pmGame.headerTiles.children[i].kill();
+            }
             pmGame.result.bringToTop();
         }
     }
@@ -281,6 +306,7 @@ function dragStop(draggedItem, pointer) {
     //}
 }
 function overlapHandler(bullet, veg) {
+    //debugger;
     if (bullet != veg) {
     }
 }
@@ -288,8 +314,15 @@ function initTiles(me) {
     //debugger;
     //var me = this;
     initHeaderTiles(pmGame.me);
+    //+ Commented out Jaz
+    //for (var y = 100; y <= 550; y = y + 50) {
+    //    for (var x = 150; x <= 550; x = x + 100) {
+    //        pmGame.correctCoords.push({ x: x, y: y });
+    //    }
+    //}
+    //- Commented out Jaz
     for (var y = 100; y <= 550; y = y + 50) {
-        for (var x = 150; x <= 550; x = x + 100) {
+        for (var x = pmGame.matrixTileWidth * 1.5; x <= pmGame.matrixTileWidth * 1.5 * 5; x = x + pmGame.matrixTileWidth) {
             pmGame.correctCoords.push({ x: x, y: y });
         }
     }
@@ -297,17 +330,33 @@ function initTiles(me) {
     var shuffledTileTexts = pmGame.tileTexts.slice();
     Phaser.ArrayUtils.shuffle(shuffledTileTexts);
     var shuffledTileIndex = 0;
-    pmGame.tileGroup = pmGame.me.add.group();
+    //Draw bounding rectangle..
+    var boundingRectX = 0;
+    var boundingRectY = 0;
+    var boundingRectWidth;
+    var boundingRectHeight;
+    //if first tile.
+    //boundingRectX = tile.position.x;
+    //boundingRectY = tile.position.y;
+    var bounds = new Phaser.Rectangle(pmGame.matrixTileWidth, pmGame.matrixTileHeight + pmGame.topBuffer, pmGame.matrixTileWidth * 5, pmGame.matrixTileHeight * 10);
+    //var graphics = pmGame.me.game.add.graphics(bounds.x, bounds.y);
+    //graphics.beginFill(0x000077);
+    //graphics.drawRect(0, 0, bounds.width, bounds.height);
     //Loop through each column in the grid
     for (var i = 1; i < pmGame.matrixDataGrid.length; i++) {
         //Loop through each position in a specific column, starting from the top
+        //debugger;
         for (var j = 1; j < pmGame.matrixDataGrid[i].length; j++) {
             //Add the tile to the game at this grid position
-            var tile = addTile(pmGame.me, j, i, shuffledTileTexts, ++shuffledTileIndex);
-            pmGame.tileGroup.add(tile); //Jaz
-            pmGame.me.physics.arcade.enable(pmGame.tileGroup, Phaser.Physics.ARCADE);
+            var tile = addTile(pmGame.me, j, i, shuffledTileTexts, shuffledTileIndex++);
+            pmGame.tiles.add(tile); //Jaz
+            //pmGame.me.physics.arcade.enable(pmGame.tileGroup, Phaser.Physics.ARCADE);
+            pmGame.me.game.physics.enable([tile], Phaser.Physics.ARCADE);
+            tile.body.setSize(pmGame.matrixTileWidth, pmGame.matrixTileHeight, pmGame.matrixTileWidth / 2, pmGame.matrixTileHeight / 2);
+            tile.body.immovable = true;
             //Keep a track of the tiles position in our tileGrid
             pmGame.matrixDataGrid[j][i] = tile;
+            tile.input.boundsRect = bounds;
         }
     }
 }
@@ -322,13 +371,13 @@ function initHeaderTiles(me) {
         var tileColor = pmGame.tileHeaderColors[pmGame.tileHeaderColors.length - 1];
         var tileToAdd = createTile(pmGame.me, tileLetter, tileColor, 1);
         //Add the tile at the correct x position, but add it to the top of the game (so we can slide it in)
-        var tile = pmGame.tiles.create(pmGame.leftBuffer + (i * pmGame.matrixTileWidth) + pmGame.matrixTileWidth / 2, 0, tileToAdd);
+        var tile = pmGame.headerTiles.create(pmGame.leftBuffer + (i * pmGame.matrixTileWidth) + pmGame.matrixTileWidth / 2, 0, tileToAdd);
         //tile.inputEnabled = true;
         //tile.input.enableDrag(false, true);
         //tile.onDragStart.add(onDragStart, me);
         //tile.onDragStop.add(onDragStop, me);
         //Animate the tile into the correct vertical position
-        pmGame.me.game.add.tween(tile).to({ y: pmGame.topBuffer + (0 * pmGame.matrixTileHeight + (pmGame.matrixTileHeight / 2)) }, 500, Phaser.Easing.Bounce.In, true);
+        pmGame.me.game.add.tween(tile).to({ y: pmGame.topBuffer + (0 * pmGame.matrixTileHeight + (pmGame.matrixTileHeight / 2)) }, 500, Phaser.Easing.Quadratic.InOut, true);
         //Set the tiles anchor point to the center
         tile.anchor.setTo(0.5, 0.5);
         //Keep track of the type of tile that was added
@@ -347,13 +396,13 @@ function initHeaderTiles(me) {
         var tileColor = pmGame.tileHeaderColors[pmGame.tileHeaderColors.length - 1];
         var tileToAdd = createTile(pmGame.me, tileLetter, tileColor, 2);
         //Add the tile at the correct x position, but add it to the top of the game (so we can slide it in)
-        var tile = pmGame.tiles.create(pmGame.leftBuffer + (0 * pmGame.matrixTileWidth) + pmGame.matrixTileWidth / 2, 0, tileToAdd);
+        var tile = pmGame.headerTiles.create(pmGame.leftBuffer + (0 * pmGame.matrixTileWidth) + pmGame.matrixTileWidth / 2, 0, tileToAdd);
         //tile.inputEnabled = true;
         //tile.input.enableDrag(false, true);
         //tile.onDragStart.add(onDragStart, me);
         //tile.onDragStop.add(onDragStop, me);
         //Animate the tile into the correct vertical position
-        pmGame.me.game.add.tween(tile).to({ y: pmGame.topBuffer + (j * pmGame.matrixTileHeight + (pmGame.matrixTileHeight / 2)) }, 500, Phaser.Easing.Bounce.In, true);
+        pmGame.me.game.add.tween(tile).to({ y: pmGame.topBuffer + (j * pmGame.matrixTileHeight + (pmGame.matrixTileHeight / 2)) }, 500, Phaser.Easing.Bounce.Out, true);
         //Set the tiles anchor point to the center
         tile.anchor.setTo(0.5, 0.5);
         //Keep track of the type of tile that was added
@@ -389,13 +438,13 @@ function addTile(me, x, y, shuffledTileTexts, shuffledTileIndex) {
     //- Jaz
     tile.isInCorrectPosition = false;
     tile.inputEnabled = true;
-    tile.input.enableSnap(10, 10, false, true);
+    //tile.input.enableSnap(10, 10, false, true);
     tile.input.enableDrag();
     tile.events.onDragStart.add(dragStart);
     tile.events.onDragUpdate.add(dragUpdate);
     tile.events.onDragStop.add(dragStop);
     //Animate the tile into the correct vertical position
-    pmGame.me.game.add.tween(tile).to({ y: pmGame.topBuffer + (y * pmGame.matrixTileHeight + (pmGame.matrixTileHeight / 2)) }, 500, Phaser.Easing.Bounce.In, true);
+    pmGame.me.game.add.tween(tile).to({ y: pmGame.topBuffer + (y * pmGame.matrixTileHeight + (pmGame.matrixTileHeight / 2)) }, 500, Phaser.Easing.Quadratic.Out, true);
     //Set the tiles anchor point to the center
     tile.anchor.setTo(0.5, 0.5);
     //Keep track of the type of tile that was added
