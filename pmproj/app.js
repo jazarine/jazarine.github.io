@@ -216,7 +216,7 @@ var SimpleGame = (function () {
         //  Scroll the background
         //pmGame.starfield.tilePosition.y -= 1;
         //pmGame.sky.tilePosition.y -= 1;
-        pmGame.clouds.tilePosition.y = -1;
+        pmGame.clouds.tilePosition.y -= 1;
         //pmGame.starfield.tilePosition.x += 1;
         //debugger;
         //pmGame.me.physics.arcade.collide(pmGame.tileGroup.children[0], pmGame.tileGroup.children[1], collisionHandler, null, this);
