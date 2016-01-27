@@ -5,6 +5,7 @@ var PMGame = (function () {
         this.sky = null;
         this.clouds = null;
         this.me = null;
+        this.bitMapKeyArr = null;
         this.score = 0;
         this.scoreBuffer = 0;
         this.result = null;
@@ -281,7 +282,7 @@ function dragStop(draggedItem, pointer) {
             draggedItem.inputEnabled = false;
             draggedItem.isInCorrectPosition = true;
             pmGame.score++;
-            draggedItem.tint = 0xff00ff;
+            draggedItem.tint = 15530070.129023131;
         }
         if (pmGame.score == 27) {
             var winningTime = Math.round(pmGame.me.game.time.totalElapsedSeconds());
@@ -453,6 +454,7 @@ function addTile(me, x, y, shuffledTileTexts, shuffledTileIndex) {
     var tileToAdd = createTile(pmGame.me, tileLetter, tileColor, 0);
     //Add the tile at the correct x position, but add it to the top of the game (so we can slide it in)
     var tile = pmGame.tiles.create(pmGame.leftBuffer + (x * pmGame.matrixTileWidth) + pmGame.matrixTileWidth / 2, 0, tileToAdd);
+    tile.alpha = 0.9;
     //+ Commented out Jaz
     //tile.correctX = pmGame.correctCoords[randomInteger].x;
     //tile.correctY = pmGame.correctCoords[randomInteger].y;
@@ -486,8 +488,8 @@ function createTile(me, letter, color, tileType) {
     var grd = tile.context.createLinearGradient(0, 0, 0, 32);
     //debugger;
     if (tileType == 0) {
-        grd.addColorStop(0, '#a90329');
-        grd.addColorStop(1, '#6d0019');
+        grd.addColorStop(0, '#cc0000');
+        grd.addColorStop(1, '#cc0000');
         tile.ctx.rect(5, 5, pmGame.matrixTileWidth - 5, pmGame.matrixTileHeight - 5);
         tile.ctx.fillStyle = grd;
         tile.ctx.fill();
@@ -498,24 +500,24 @@ function createTile(me, letter, color, tileType) {
         wrapText(tile.ctx, letter, pmGame.matrixTileWidth / 2, 15, pmGame.matrixTileWidth - 5, 18);
     }
     else if (tileType == 1) {
-        grd.addColorStop(0, '#f9c667');
-        grd.addColorStop(1, '#f79621');
+        grd.addColorStop(0, '#a4b357');
+        grd.addColorStop(1, '#75890c');
         tile.ctx.rect(5, 5, pmGame.matrixTileWidth - 5, pmGame.matrixTileHeight - 5);
         tile.ctx.fillStyle = grd;
         tile.ctx.fill();
-        tile.ctx.font = '10px Paprika';
+        tile.ctx.font = '15px Paprika';
         tile.ctx.fillStyle = '#fff';
         tile.ctx.textAlign = 'center';
         tile.ctx.textBaseline = 'middle';
         wrapText(tile.ctx, letter, pmGame.matrixTileWidth / 2, pmGame.matrixTileHeight / 2, pmGame.matrixTileWidth - 5, 18);
     }
     else {
-        grd.addColorStop(0, '#627d4d');
-        grd.addColorStop(1, '#1f3b08');
+        grd.addColorStop(0, '#a4b357');
+        grd.addColorStop(1, '#75890c');
         tile.ctx.rect(5, 5, pmGame.matrixTileWidth - 5, pmGame.matrixTileHeight - 5);
         tile.ctx.fillStyle = grd;
         tile.ctx.fill();
-        tile.ctx.font = '10px Paprika';
+        tile.ctx.font = '13px Paprika';
         tile.ctx.fillStyle = '#fff';
         tile.ctx.textAlign = 'center';
         tile.ctx.textBaseline = 'middle';
@@ -530,6 +532,7 @@ function createTile(me, letter, color, tileType) {
     //}
     //tile.ctx.fillText(letter, 0, pmGame.matrixTileHeight / 2, pmGame.matrixTileWidth);
     //tile.ctx.strokeText("Hello World", 0, pmGame.matrixTileHeight / 2);
+    pmGame.bitMapKeyArr = tile;
     return tile;
 }
 // http: //www.html5canvastutorials.com/tutorials/html5-canvas-wrap-text-tutorial/
