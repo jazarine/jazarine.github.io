@@ -488,8 +488,8 @@ function createTile(me, letter, color, tileType) {
     var grd = tile.context.createLinearGradient(0, 0, 0, 32);
     //debugger;
     if (tileType == 0) {
-        grd.addColorStop(0, '#cc0000');
-        grd.addColorStop(1, '#cc0000');
+        grd.addColorStop(0, '#a90329');
+        grd.addColorStop(1, '#6d0019');
         tile.ctx.rect(5, 5, pmGame.matrixTileWidth - 5, pmGame.matrixTileHeight - 5);
         tile.ctx.fillStyle = grd;
         tile.ctx.fill();
