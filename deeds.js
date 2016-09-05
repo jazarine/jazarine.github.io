@@ -34,7 +34,7 @@ $("#nextButton").click(function () {
     ];
 
     //$("#quote").text(quotes[(++qindex % quotes.length)])      //Commented out Jaz 5-Sep-2016 - Randomize deeds
-    $("#quote").text(deeds[Math.floor(Math.random() * quotes.length)])      //Jaz 5-Sep-2016 - Randomize deeds
+    $("#quote").text(deeds[Math.floor(Math.random() * deeds.length)])      //Jaz 5-Sep-2016 - Randomize deeds
 })
 
 $("#nextButton").click()
