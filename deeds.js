@@ -1,10 +1,10 @@
 /**
  * Created by jjamal1 on 7/19/14.
  */
-var qindex = -1;
+//var qindex = -1;      //Commented out Jaz 5-Sep-2016 - Randomize deeds.
 
 $("#nextButton").click(function () {
-    var quotes = [
+    var deeds = [
         "Be good to people for no reason.",
         "Smile at strangers. Any person at the cash register, person behind a customer service desk, cleaners/helpers at the mall, on road, etc. Make their day!",
         "Visit someone who is lonely.",
@@ -33,7 +33,8 @@ $("#nextButton").click(function () {
         "Stop Negative Conversations."
     ];
 
-    $("#quote").text(quotes[(++qindex % quotes.length)])
+    //$("#quote").text(quotes[(++qindex % quotes.length)])      //Commented out Jaz 5-Sep-2016 - Randomize deeds
+    $("#quote").text(deeds[Math.floor(Math.random() * quotes.length)])      //Jaz 5-Sep-2016 - Randomize deeds
 })
 
 $("#nextButton").click()
