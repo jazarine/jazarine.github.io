@@ -5,6 +5,7 @@ var qindex = -1;
 
 $("#nextButton").click(function () {
     var quotes = [
+        "Be good to people for no reason.",
         "Smile at strangers. Any person at the cash register, person behind a customer service desk, cleaners/helpers at the mall, on road, etc. Make their day!",
         "Visit someone who is lonely.",
         "Buy water for Labourers working in the Scorching heat.",
