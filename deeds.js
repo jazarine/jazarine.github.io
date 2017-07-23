@@ -30,7 +30,8 @@ $("#nextButton").click(function () {
         "Stop and assist someone who has a puncture.",
         "Look for someone to pass your unexpired parking ticket to.",
         "Give Affirmation. Words can heal, they can bless, they can bring comfort and they can transform lives. So choose to be an affirming person.  Offer encouragement freely to your friends, co-workers, and family, and without any expectation of anything in return. You can always find something positive to say in any situation, it just depends on your perspective. Be generous with your words of affirmation to all those around you, and most importantly, to yourself.",
-        "Stop Negative Conversations."
+        "Stop Negative Conversations.",
+        "Reach out to someone who you think may be suffering from depression. A simple 'Have a good day' goes a long way to let her/him know you are thinking of her/him."
     ];
 
     //$("#quote").text(quotes[(++qindex % quotes.length)])      //Commented out Jaz 5-Sep-2016 - Randomize deeds
